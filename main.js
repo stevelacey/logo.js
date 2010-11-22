@@ -41,20 +41,33 @@ if (uri == '') {
   request({uri:uri}, function (error, response, context) {
     if(!error && response.statusCode == 200) {
       var imgs = ['#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
-      var divs = ['[#|.]header [#|.]logo', '[#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', '[#|.]header', 'h1']; // regex
+      var inlines = ['#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
+      var divs = ['[#|.]header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', 'h1']; // regex
       var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
       // Try imgs
       var logo = $(imgs.join(','), context).attr('src');
 
       if(logo === undefined) {
+        // Check for inline styles
+        var inline = $(inlines.join('[style],') + '[style]', context).attr('style');
+        
+        if(inline !== undefined) {
+          var matches = inline.match(new RegExp("background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)]+)"));
+          if(matches !== null) {
+            logo = matches[1];
+          }
+        }
+      }
+
+      if(logo === undefined) {
         // Check for an OpenGraph image
-        var logo = $('meta[property="og:image"]', context).attr('content');
+        logo = $('meta[property="og:image"]', context).attr('content');
       }
 
       if(logo === undefined) {
         // Check for an iOS icon
-        var logo = $('link[rel="apple-touch-icon-precomposed"], link[rel="apple-touch-icon"]', context).attr('href');
+        logo = $('link[rel="apple-touch-icon-precomposed"], link[rel="apple-touch-icon"]', context).attr('href');
       }
 
       if(logo === undefined) {
@@ -73,7 +86,7 @@ if (uri == '') {
                 var regex = new RegExp(divs[i] + "\\s*{[^}]*background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)&^}]+)");
                 var matches = css.match(regex);
                 if(matches !== null) {
-                  var logo = matches[1];
+                  logo = matches[1];
                   break;
                 }
               }
