@@ -32,6 +32,9 @@ if (uri == '') {
 } else if(uri == 'robots.txt') {
   respond(webresponse);
 } else {
+  if(uri.substr(0,4) != 'http') {
+    uri = 'http://' + uri;
+  }
 
   console.log(uri);
 
