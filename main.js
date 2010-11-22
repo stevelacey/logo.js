@@ -2,7 +2,7 @@ var sys     = require("sys"),
     http    = require("http"),
     port    = 8080,
     request = require("request"),
-    fs     = require("fs"),
+    fs      = require("fs"),
     url     = require("url"),
     $       = require("jquery"),
     uri;
@@ -83,8 +83,7 @@ if (uri == '') {
           request({uri:url.resolve(uri, stylesheet)}, function (error, response, css) {
             if(!error && response.statusCode == 200) {
               for(var i in divs) {
-                var regex = new RegExp(divs[i] + "\\s*{[^}]*background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)&^}]+)");
-                var matches = css.match(regex);
+                var matches = css.match(new RegExp(divs[i] + "\\s*{[^}]*background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)&^}]+)"));
                 if(matches !== null) {
                   logo = matches[1];
                   break;
