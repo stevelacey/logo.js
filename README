@@ -9,7 +9,7 @@ Taken into acocunt are:
   - img tags within a variety of commonly named classes and or ids
   - commonly named ids and or classes with background images
 
-I have only tested this on a relatively small selection of websites, and will continue to add in more common design naming conventions as I come across them. At present it works fairly well on web conference / social event websites (as per its design), I have also seen varying degrees of success on web designer portfolios. Before you try it, Google set their logo image in an inline-style on a div, who else is going to do that! (I might add support for that later).
+I have only tested this on a relatively small selection of websites, and will continue to add in more common design naming conventions as I come across them. At present it works fairly well on web conference / social event websites (as per its design), I have also seen varying degrees of success on web designer portfolios.
 
 This script makes use of the node.js module jsdom; of which there is a bug which I have report here: https://github.com/tmpvar/jsdom/issues#issue/81. You can make the amendment provided on the thread yourself until they patch it to allow this code to function.
 
