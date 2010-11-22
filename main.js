@@ -2,6 +2,7 @@ var sys     = require("sys"),
     http    = require("http"),
     port    = 8080,
     request = require("request"),
+    fs     = require("fs"),
     url     = require("url"),
     $       = require("jquery"),
     uri;
@@ -22,8 +23,10 @@ http.createServer(function(webrequest, webresponse) {
 uri = webrequest.url.replace(/^\/*/, '');
 
 if (uri == '') {
-  webresponse.writeHead(200, {'Content-Type': 'text/html'});
-  webresponse.end('<h1>Node.JS Logo Scraper</h1><p>Try <a href="http://logo.stevelacey.net/http://www.google.com">http://logo.stevelacey.net/http://www.google.com</a></p><h2>Documentation</h2><p>Returns a 302 to the image found or a 404.</p><h2>Contribute</h2><p>Code available at: <a href="https://github.com/stevelacey/node.js-logo-scraper">https://github.com/stevelacey/node.js-logo-scraper</a></p>.');
+  fs.readFile('index.html', 'binary', function(err, file) {
+    webresponse.writeHead(200, {'Content-Type': 'text/html'});
+    webresponse.end(file);
+  });
 } else if(uri == 'favicon.ico') {
   webresponse.writeHead(301, {'Location': 'http://www.stevelacey.net/favicon.ico'});
 } else if(uri == 'robots.txt') {

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Node.JS Logo Scraper</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $("form").submit(function() {
+          $("iframe").attr("src", window.location.href + $("input", this).val());
+          return false;
+        })
+      })
+    </script>
+    <style>
+      input {
+        width: 300px;
+      }
+
+      textarea {
+        width: 500px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Node.JS Logo Scraper</h1>
+    <p>Try <a href="http://logo.stevelacey.net/http://www.google.com">http://logo.stevelacey.net/http://www.google.com</a></p>
+    <h2>Documentation</h2>
+    <p>Returns a 302 to the image found or a 404.</p>
+    <h2>Demo</h2>
+    <form>
+      <input type="text" value="http://www.google.com"/><br/>
+      <iframe src="http://logo.stevelacey.net/http://www.google.com"></iframe>
+    </form>
+    <h2>Contribute</h2>
+    <p>Code available at: <a href="https://github.com/stevelacey/node.js-logo-scraper">https://github.com/stevelacey/node.js-logo-scraper</a></p>.
+  </body>
+</html>
