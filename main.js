@@ -7,17 +7,6 @@ var sys     = require("sys"),
     $       = require("jquery"),
     uri;
 
-function respond(response, logo) {
-  if(logo !== undefined) {
-    response.writeHead(302, {'Location': url.resolve(uri, logo)});
-    console.log(url.resolve(uri, logo) + '\n');
-  } else {
-    response.writeHead(404, {"Content-Type": "text/plain"});
-    console.log('Fail :(\n')
-  }
-  response.end();
-}
-
 http.createServer(function(webrequest, webresponse) {
 
 uri = webrequest.url.replace(/^\/*/, '');
@@ -46,46 +35,23 @@ if (uri == '') {
       var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
       // Try imgs
-      var logo = $(imgs.join(','), html).attr('src');
+      var logo = getImage(html, imgs);
 
       if(logo === undefined) {
-        // Check for inline styles
-        var inline = $(inlines.join('[style],') + '[style]', html).attr('style');
-        
-        if(inline !== undefined) {
-          var matches = inline.match(new RegExp("background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)]+)"));
-          if(matches !== null) {
-            logo = matches[1];
-          }
-        }
+        logo = getInlineStyleImage(html, inlines);
       }
 
       if(logo === undefined) {
-        // Check for an image filename similar to the title tag slugified
-        var title =  $('title', html).text().toLowerCase().replace(/\s+/g,'-');
-        logo = $('img[src$="' + title + '.png"], img[src$="' + title + '.jpg"], img[src$="' + title + '.jpeg"], img[src$="' + title + '.gif"]', html).attr('src');
+        logo = getImageFromTitle(html);
       }
 
       if(logo === undefined && url.parse(uri).hostname !== undefined) {
-        // Check for an image filename similar to the domain
-        var hostname = url.parse(uri).hostname.replace('www.', '');
-        var domain = hostname.substring(0,(hostname.indexOf('.')));
-        logo = $('img[src$="' + domain + '.png"], img[src$="' + domain + '.jpg"], img[src$="' + domain + '.jpeg"], img[src$="' + domain + '.gif"]', html).attr('src');
+        logo = getImageFromDomain(html);
       }
 
       if(logo === undefined) {
         // Try background-images
-        if(stylesheet === undefined && $('link[rel="stylesheet"]', html).length == 1) {
-          // If there's only one stylesheet assume it as master
-          var stylesheet = $('link[rel="stylesheet"]', html).attr('href');
-        } else {
-          // Check for commonly used main stylesheet names
-          for(var i in stylesheets) {
-            stylesheets[i] = 'link[rel="stylesheet"][href*="' + stylesheets[i] + '.css"]';
-          }
-
-          var stylesheet = $(stylesheets.join(','), html).attr('href');
-        }
+        var stylesheet = getStylesheet(html, stylesheets);
 
         if(stylesheet !== undefined) {
           console.log(url.resolve(uri, stylesheet));
@@ -143,3 +109,61 @@ if (uri == '') {
 }).listen(port);
 
 console.log('Server listening on port ' + port);
+
+
+function getImage(html, selectors) {
+  return $(selectors.join(','), html).attr('src');
+}
+
+function getInlineStyleImage(html, selectors) {
+  // Check for inline styles
+  for(var i in selectors) {
+    selectors[i] += '[style]"]';
+  }
+
+  var inline = $(selectors, html).attr('style');
+
+  if(inline !== undefined) {
+    var matches = inline.match(new RegExp("background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)]+)"));
+  }
+
+  return matches != null && matches != undefined ? matches[1] : undefined;
+}
+
+function getImageFromTitle(html) {
+  // Check for an image filename similar to the title tag slugified
+  var title =  $('title', html).text().toLowerCase().replace(/\s+/g,'-');
+  return $('img[src$="' + title + '.png"], img[src$="' + title + '.jpg"], img[src$="' + title + '.jpeg"], img[src$="' + title + '.gif"]', html).attr('src');
+}
+
+function getImageFromDomain(html) {
+  // Check for an image filename similar to the domain
+  var hostname = url.parse(uri).hostname.replace('www.', '');
+  var domain = hostname.substring(0,(hostname.indexOf('.')));
+  return $('img[src$="' + domain + '.png"], img[src$="' + domain + '.jpg"], img[src$="' + domain + '.jpeg"], img[src$="' + domain + '.gif"]', html).attr('src');
+}
+
+function getStylesheet(html, selectors) {
+  if($('link[rel="stylesheet"]', html).length == 1) {
+    // If there's only one stylesheet assume it as master
+    return $('link[rel="stylesheet"]', html).attr('href');
+  } else {
+    // Check for commonly used main stylesheet names
+    for(var i in selectors) {
+      selectors[i] = 'link[rel="stylesheet"][href*="' + selectors[i] + '.css"]';
+    }
+
+    return $(selectors.join(','), html).attr('href');
+  }
+}
+
+function respond(response, logo) {
+  if(logo !== undefined) {
+    response.writeHead(302, {'Location': url.resolve(uri, logo)});
+    console.log(url.resolve(uri, logo) + '\n');
+  } else {
+    response.writeHead(404, {"Content-Type": "text/plain"});
+    console.log('Fail :(\n')
+  }
+  response.end();
+}
