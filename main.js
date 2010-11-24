@@ -74,23 +74,18 @@ if (uri == '') {
       }
 
       if(logo === undefined) {
-        // Check for an OpenGraph image
-        logo = $('meta[property="og:image"]', context).attr('content');
-      }
-
-      if(logo === undefined) {
-        // Check for an iOS icon
-        logo = $('link[rel="apple-touch-icon-precomposed"], link[rel="apple-touch-icon"]', context).attr('href');
-      }
-
-      if(logo === undefined) {
         // Try background-images
         for(var i in stylesheets) {
           stylesheets[i] = 'link[rel="stylesheet"][href*="' + stylesheets[i] + '.css"]';
         }
 
         var stylesheet = $(stylesheets.join(','), context).attr('href');
-
+        
+        if(stylesheet === undefined && $('link[rel="stylesheet"]', context).length == 1) {
+          // If there's only one stylesheet assume it as master
+          stylesheet = $('link[rel="stylesheet"]', context).attr('href');
+        }
+        
         if(stylesheet !== undefined) {
           console.log(url.resolve(uri, stylesheet));
           request({uri:url.resolve(uri, stylesheet)}, function (error, response, css) {
@@ -105,7 +100,14 @@ if (uri == '') {
               
               if(logo !== undefined) {
                 // Found image in stylesheet
-                uri = stylesheet.substring(0,(stylesheet.lastIndexOf('/')) + 1);
+                stylesheet = stylesheet.substring(0,(stylesheet.lastIndexOf('/')) + 1);
+
+                if(stylesheet.substr(0,4) == 'http') {
+                  uri = stylesheet;
+                } else {
+                  uri = url.resolve(uri, stylesheet);
+                }
+
                 respond(webresponse, logo);
               } else {
                 respond(webresponse);
@@ -113,7 +115,19 @@ if (uri == '') {
             }
           })
         } else {
-          respond(webresponse);
+          // Check for an OpenGraph image
+          logo = $('meta[property="og:image"]', context).attr('content');
+
+          if(logo === undefined) {
+            // Check for an iOS icon
+            logo = $('link[rel="apple-touch-icon-precomposed"], link[rel="apple-touch-icon"]', context).attr('href');
+          }
+          
+          if(logo !== undefined) {
+            respond(webresponse, logo);
+          } else {
+            respond(webresponse);
+          }
         }
       } else {
         respond(webresponse, logo);
