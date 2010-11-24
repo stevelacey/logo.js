@@ -66,7 +66,7 @@ if (uri == '') {
         logo = $('img[src$="' + title + '.png"], img[src$="' + title + '.jpg"], img[src$="' + title + '.jpeg"], img[src$="' + title + '.gif"]', context).attr('src');
       }
 
-      if(logo === undefined) {
+      if(logo === undefined && url.parse(uri).hostname !== undefined) {
         // Check for an image filename similar to the domain
         var hostname = url.parse(uri).hostname.replace('www.', '');
         var domain = hostname.substring(0,(hostname.indexOf('.')));
