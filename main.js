@@ -42,7 +42,7 @@ if (uri == '') {
     if(!error && response.statusCode == 200) {
       var imgs = ['#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
       var inlines = ['#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
-      var divs = ['[#|.]header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', 'h1']; // regex
+      var divs = ['[#|.]header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', 'h1', '#title']; // regex
       var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
       // Try imgs
@@ -89,8 +89,10 @@ if (uri == '') {
                   break;
                 }
               }
-
+              
               if(logo !== undefined) {
+                // Found image in stylesheet
+                uri = stylesheet.substring(0,(stylesheet.lastIndexOf('/')) + 1);
                 respond(webresponse, logo);
               } else {
                 respond(webresponse);
