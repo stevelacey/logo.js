@@ -38,7 +38,7 @@ if (uri == '') {
 
   console.log(uri);
 
-  request({uri:uri}, function (error, response, context) {
+  request({uri:uri}, function (error, response, html) {
     if(!error && response.statusCode == 200) {
       var imgs = ['#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
       var inlines = ['#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
@@ -46,11 +46,11 @@ if (uri == '') {
       var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
       // Try imgs
-      var logo = $(imgs.join(','), context).attr('src');
+      var logo = $(imgs.join(','), html).attr('src');
 
       if(logo === undefined) {
         // Check for inline styles
-        var inline = $(inlines.join('[style],') + '[style]', context).attr('style');
+        var inline = $(inlines.join('[style],') + '[style]', html).attr('style');
         
         if(inline !== undefined) {
           var matches = inline.match(new RegExp("background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)]+)"));
@@ -62,29 +62,29 @@ if (uri == '') {
 
       if(logo === undefined) {
         // Check for an image filename similar to the title tag slugified
-        var title =  $('title', context).text().toLowerCase().replace(/\s+/g,'-');
-        logo = $('img[src$="' + title + '.png"], img[src$="' + title + '.jpg"], img[src$="' + title + '.jpeg"], img[src$="' + title + '.gif"]', context).attr('src');
+        var title =  $('title', html).text().toLowerCase().replace(/\s+/g,'-');
+        logo = $('img[src$="' + title + '.png"], img[src$="' + title + '.jpg"], img[src$="' + title + '.jpeg"], img[src$="' + title + '.gif"]', html).attr('src');
       }
 
       if(logo === undefined && url.parse(uri).hostname !== undefined) {
         // Check for an image filename similar to the domain
         var hostname = url.parse(uri).hostname.replace('www.', '');
         var domain = hostname.substring(0,(hostname.indexOf('.')));
-        logo = $('img[src$="' + domain + '.png"], img[src$="' + domain + '.jpg"], img[src$="' + domain + '.jpeg"], img[src$="' + domain + '.gif"]', context).attr('src');
+        logo = $('img[src$="' + domain + '.png"], img[src$="' + domain + '.jpg"], img[src$="' + domain + '.jpeg"], img[src$="' + domain + '.gif"]', html).attr('src');
       }
 
       if(logo === undefined) {
         // Try background-images
-        if(stylesheet === undefined && $('link[rel="stylesheet"]', context).length == 1) {
+        if(stylesheet === undefined && $('link[rel="stylesheet"]', html).length == 1) {
           // If there's only one stylesheet assume it as master
-          var stylesheet = $('link[rel="stylesheet"]', context).attr('href');
+          var stylesheet = $('link[rel="stylesheet"]', html).attr('href');
         } else {
           // Check for commonly used main stylesheet names
           for(var i in stylesheets) {
             stylesheets[i] = 'link[rel="stylesheet"][href*="' + stylesheets[i] + '.css"]';
           }
 
-          var stylesheet = $(stylesheets.join(','), context).attr('href');
+          var stylesheet = $(stylesheets.join(','), html).attr('href');
         }
 
         if(stylesheet !== undefined) {
@@ -117,11 +117,11 @@ if (uri == '') {
           })
         } else {
           // Check for an OpenGraph image
-          logo = $('meta[property="og:image"]', context).attr('content');
+          logo = $('meta[property="og:image"]', html).attr('content');
 
           if(logo === undefined) {
             // Check for an iOS icon
-            logo = $('link[rel="apple-touch-icon-precomposed"], link[rel="apple-touch-icon"]', context).attr('href');
+            logo = $('link[rel="apple-touch-icon-precomposed"], link[rel="apple-touch-icon"]', html).attr('href');
           }
           
           if(logo !== undefined) {
