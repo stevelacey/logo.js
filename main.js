@@ -75,17 +75,18 @@ if (uri == '') {
 
       if(logo === undefined) {
         // Try background-images
-        for(var i in stylesheets) {
-          stylesheets[i] = 'link[rel="stylesheet"][href*="' + stylesheets[i] + '.css"]';
-        }
-
-        var stylesheet = $(stylesheets.join(','), context).attr('href');
-        
         if(stylesheet === undefined && $('link[rel="stylesheet"]', context).length == 1) {
           // If there's only one stylesheet assume it as master
-          stylesheet = $('link[rel="stylesheet"]', context).attr('href');
+          var stylesheet = $('link[rel="stylesheet"]', context).attr('href');
+        } else {
+          // Check for commonly used main stylesheet names
+          for(var i in stylesheets) {
+            stylesheets[i] = 'link[rel="stylesheet"][href*="' + stylesheets[i] + '.css"]';
+          }
+
+          var stylesheet = $(stylesheets.join(','), context).attr('href');
         }
-        
+
         if(stylesheet !== undefined) {
           console.log(url.resolve(uri, stylesheet));
           request({uri:url.resolve(uri, stylesheet)}, function (error, response, css) {
