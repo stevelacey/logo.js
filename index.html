@@ -14,23 +14,36 @@
       })
     </script>
     <style>
-      body { margin: 1em; font: 1.25em arial; }
+      body { margin: 1em; font: 1.25em arial }
       h1 { margin: 0 }
       input { width: 300px }
-      textarea { width: 500px; height: 200px; }
+      a[href*="twitter"] {
+        background: url("http://a2.twimg.com/profile_images/694030230/Steve_-_Frankie___Bennies_normal.png") no-repeat;
+        display: block;
+        height: 48px;
+        line-height: 48px;
+        padding-left: 60px;
+      }
     </style>
   </head>
   <body>
-    <h1>Node.JS Logo Scraper</h1>
-    <p>Try <a href="http://logo.stevelacey.net/http://www.google.com">http://logo.stevelacey.net/http://www.google.com</a></p>
-    <h2>Documentation</h2>
-    <p>Returns a 302 to the image found or a 404.</p>
-    <h2>Demo</h2>
-    <form>
-      <input type="text" value="http://www.nodejs.org"/><br/>
-      <img src="http://www.nodejs.org/logo.png"/>
-    </form>
-    <h2>Contribute</h2>
-    <p>Code available at: <a href="https://github.com/stevelacey/node.js-logo-scraper">https://github.com/stevelacey/node.js-logo-scraper</a>.</p>
+    <article>
+      <h1>Node.JS Logo Scraper</h1>
+      <p>Try <a href="http://logo.stevelacey.net/http://www.google.com">http://logo.stevelacey.net/http://www.google.com</a></p>
+      <h2>Documentation</h2>
+      <p>Returns a 302 to the image found or a 404.</p>
+      <h2>Demo</h2>
+      <form>
+        <input type="text" value="http://www.nodejs.org"/><br/>
+        <img src="http://www.nodejs.org/logo.png"/>
+      </form>
+      <h2>Contribute</h2>
+      <p>Code available at: <a href="https://github.com/stevelacey/node.js-logo-scraper">https://github.com/stevelacey/node.js-logo-scraper</a>.</p>
+    </article>
+    <aside>
+      <h2>Author</h2>
+      <p><a href="http://www.twitter.com/stevelacey">@stevelacey</a></p>
+      <p><a href="http://www.stevelacey.net">http://www.stevelacey.net</a></p>
+    </aside>
   </body>
 </html>
