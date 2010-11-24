@@ -61,6 +61,19 @@ if (uri == '') {
       }
 
       if(logo === undefined) {
+        // Check for an image filename similar to the title tag slugified
+        var title =  $('title', context).text().toLowerCase().replace(/\s+/g,'-');
+        logo = $('img[src$="' + title + '.png"], img[src$="' + title + '.jpg"], img[src$="' + title + '.jpeg"], img[src$="' + title + '.gif"]', context).attr('src');
+      }
+
+      if(logo === undefined) {
+        // Check for an image filename similar to the domain
+        var hostname = url.parse(uri).hostname.replace('www.', '');
+        var domain = hostname.substring(0,(hostname.indexOf('.')));
+        logo = $('img[src$="' + domain + '.png"], img[src$="' + domain + '.jpg"], img[src$="' + domain + '.jpeg"], img[src$="' + domain + '.gif"]', context).attr('src');
+      }
+
+      if(logo === undefined) {
         // Check for an OpenGraph image
         logo = $('meta[property="og:image"]', context).attr('content');
       }
