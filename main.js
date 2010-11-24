@@ -1,33 +1,30 @@
 var sys     = require("sys"),
     http    = require("http"),
     port    = 8080,
-    request = require("request"),
+    get     = require("request"),
     fs      = require("fs"),
     url     = require("url"),
     $       = require("jquery"),
     uri;
 
-http.createServer(function(webrequest, webresponse) {
-  uri = webrequest.url.replace(/^\/*/, '');
+http.createServer(function(request, response) {
+  uri = request.url.replace(/^\/*/, '');
 
   if (uri == '') {
     fs.readFile('index.html', 'binary', function(err, file) {
-      webresponse.writeHead(200, {'Content-Type': 'text/html'});
-      webresponse.end(file);
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.end(file);
     });
   } else if(uri == 'favicon.ico') {
-    webresponse.writeHead(301, {'Location': 'http://www.stevelacey.net/favicon.ico'});
+    response.writeHead(301, {'Location': 'http://www.stevelacey.net/favicon.ico'});
   } else if(uri == 'robots.txt') {
-    respond(webresponse);
+    respond(response);
   } else {
-    if(uri.substr(0,4) != 'http') {
-      uri = 'http://' + uri;
-    }
-
+    uri = getUri();
     console.log(uri);
 
-    request({uri:uri}, function (error, response, html) {
-      if(!error && response.statusCode == 200) {
+    get({uri:uri}, function (error, r, html) {
+      if(!error && r.statusCode == 200) {
         var imgs = ['#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
         var inlines = ['#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
         var divs = ['[#|.]header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', 'h1', '#title']; // regex
@@ -41,43 +38,42 @@ http.createServer(function(webrequest, webresponse) {
 
           if(stylesheet != undefined) {
             console.log(url.resolve(uri, stylesheet));
-            request({uri:url.resolve(uri, stylesheet)}, function (error, response, css) {
-              if(!error && response.statusCode == 200) {
+            get({uri:url.resolve(uri, stylesheet)}, function (error, r, css) {
+              if(!error && r.statusCode == 200) {
                 logo = getImageFromStylesheet(css, divs);
 
                 if(logo != undefined) {
-                  // Found image in stylesheet
-
                   // The image path might be relational to the stylesheet location, redefine uri.
                   uri = getStylesheetBaseDirectory(stylesheet);
-
-                  respond(webresponse, logo);
+                  redirect(response, logo);
                 } else {
-                  respond(webresponse);
+                  logo = postStylesheetScrape(html);
+                  respond(response, logo);
                 }
+              } else {
+                logo = postStylesheetScrape(html);
+                respond(response, logo);
               }
             })
           } else {
             logo = postStylesheetScrape(html);
-
-            if(logo != undefined) {
-              respond(webresponse, logo);
-            } else {
-              respond(webresponse);
-            }
+            respond(response, logo);
           }
         } else {
-          respond(webresponse, logo);
+          redirect(response, logo);
         }
       } else {
-        respond(webresponse);
+        fail(response);
       }
     })
-
   }
 }).listen(port);
 
 console.log('Server listening on port ' + port);
+
+function getUri() {
+  return uri.substr(0,4) != 'http' ? 'http://' + uri : uri;
+}
 
 function preStylesheetScrape(html, imgs, inlines) {
   var logo;
@@ -94,7 +90,7 @@ function preStylesheetScrape(html, imgs, inlines) {
   return logo;
 }
 
-function postStylesheetScrape() {
+function postStylesheetScrape(html) {
   var logo;
   
   for(i = 1; logo == undefined && i <= 2; i++) {
@@ -191,12 +187,21 @@ function getMobileImage(html) {
 }
 
 function respond(response, logo) {
-  if(logo !== undefined) {
-    response.writeHead(302, {'Location': url.resolve(uri, logo)});
-    console.log(url.resolve(uri, logo) + '\n');
+  if(logo != undefined) {
+    redirect(response, logo);
   } else {
-    response.writeHead(404, {"Content-Type": "text/plain"});
-    console.log('Fail :(\n')
+    fail(response);
   }
+}
+
+function redirect(response, logo) {
+  response.writeHead(302, {'Location': url.resolve(uri, logo)});
+  console.log(url.resolve(uri, logo) + '\n');
+  response.end();
+}
+
+function fail(response) {
+  response.writeHead(404, {"Content-Type": "text/plain"});
+  console.log('Fail :(\n')
   response.end();
 }
