@@ -13,6 +13,6 @@ Taken into account are:
 
 I have only tested this on a relatively small selection of websites, and will continue to add in more common design naming conventions as I come across them. At present it works fairly well on web conference / social event websites (as per its design), I have also seen varying degrees of success on web designer portfolios.
 
-This script makes use of the node.js module jsdom; of which there is a bug which I have report here: https://github.com/tmpvar/jsdom/issues#issue/81. You can make the amendment provided on the thread yourself until they patch it to allow this code to function.
+This script makes use of the node.js module jsdom; of which there is a bug which I have reported here: https://github.com/tmpvar/jsdom/issues#issue/81. You can make the amendment provided on the thread yourself until they patch it to allow this code to function correctly, the problem only occurs when a set of >1 DOM nodes match a selector.
 
 Copyright 2010, Steve Lacey. Released under the MIT license (see LICENSE). Steve Lacey is a freelance web developer who you can find more from at http://www.stevelacey.net.
