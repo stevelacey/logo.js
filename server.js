@@ -1,6 +1,6 @@
 var sys     = require("sys"),
     http    = require("http"),
-    port    = 8080,
+    port    = 80,
     get     = require("request"),
     fs      = require("fs"),
     url     = require("url"),
