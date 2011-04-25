@@ -16,10 +16,6 @@ http.createServer(function(request, response) {
       response.writeHead(200, {'Content-Type': 'text/html'});
       response.end(file);
     });
-  } else if(uri == 'favicon.ico') {
-    response.writeHead(301, {'Location': 'http://www.stevelacey.net/favicon.ico'});
-  } else if(uri == 'robots.txt') {
-    fail(response);
   } else {
     var filename = path.join(process.cwd(), url.parse(request.url).pathname);
 
@@ -28,7 +24,7 @@ http.createServer(function(request, response) {
         uri = getUri();
         console.log(uri);
 
-        get({uri:uri}, function (error, r, html) {
+        get({uri: uri}, function (error, r, html) {
           if(!error && r.statusCode == 200) {
             var imgs = ['header img:first', '#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
             var inlines = ['header', '#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
@@ -36,6 +32,10 @@ http.createServer(function(request, response) {
             var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
             var logo = preStylesheetScrape(html, imgs, inlines);
+
+            if(uri == '') {
+              uri = 'http://logo.no.de';
+            }
 
             if(logo == undefined) {
               // Try background-images
