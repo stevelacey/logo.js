@@ -2,36 +2,19 @@
 <html>
   <head>
     <title>Logo.js</title>
-    <link rel="shortcut icon" href="http://www.stevelacey.net/favicon.ico" />
+    <link rel="shortcut icon" href="http://www.stevelacey.net/favicon.ico"/>
+    <link rel="stylesheet" href="css/main.css"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-    <script>
-      $(document).ready(function() {
-        $("form").submit(function() {
-          $("img", this).remove();
-          $(this).append($("<img/>", {"src": window.location.href + $("input", this).val()}));
-          return false;
-        })
-      })
-    </script>
-    <style>
-      body { margin: 1em; font: 1.25em arial }
-      h1 { margin: 0 }
-      input { width: 300px }
-      a[href*="twitter"] {
-        background: url("http://a2.twimg.com/profile_images/694030230/Steve_-_Frankie___Bennies_normal.png") no-repeat;
-        display: block;
-        height: 48px;
-        line-height: 48px;
-        padding-left: 60px;
-      }
-    </style>
+    <script src="js/main.js"></script>
   </head>
   <body>
     <article>
-      <hgroup>
-        <h1>Logo.js</h1>
-        <h2>Node.js based website logo scraper</h2>
-      </hgroup>
+      <header>
+        <hgroup>
+          <h1>Logo.js</h1>
+          <h2>Node.js based website logo scraper</h2>
+        </hgroup>
+      </header>
       <p>Try <a href="http://logo.no.de/http://www.ebay.co.uk">http://logo.no.de/http://www.ebay.co.uk</a></p>
       <h2>Documentation</h2>
       <p>Returns a 302 to the image found or a 404.</p>

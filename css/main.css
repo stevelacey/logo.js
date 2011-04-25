@@ -1,0 +1,20 @@
+body {
+  margin: 1em;
+  font: 1.25em arial
+}
+
+h1 {
+  margin: 0
+}
+
+input {
+  width: 300px
+}
+
+a[href*="twitter"] {
+  background: url("http://a2.twimg.com/profile_images/694030230/Steve_-_Frankie___Bennies_normal.png") no-repeat;
+  display: block;
+  height: 48px;
+  line-height: 48px;
+  padding-left: 60px;
+}
