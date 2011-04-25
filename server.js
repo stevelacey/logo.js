@@ -28,7 +28,7 @@ http.createServer(function(request, response) {
           if(!error && r.statusCode == 200) {
             var imgs = ['header img:first', '#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
             var inlines = ['header', '#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
-            var divs = ['[#|.]*header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', '[#|.]*header', 'h1', '#title']; // regex
+            var divs = ['[#|.]*header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', '[#|.]*header', 'h1 a', 'h1', '#title']; // regex
             var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
             var logo = preStylesheetScrape(html, imgs, inlines);
