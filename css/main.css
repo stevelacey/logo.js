@@ -3,6 +3,10 @@ body {
   font: 1.25em arial
 }
 
+header {
+  background: url("http://laughingsquid.com/wp-content/uploads/royal-fail.jpg") 0 -9999px no-repeat;
+}
+
 h1 {
   margin: 0
 }
