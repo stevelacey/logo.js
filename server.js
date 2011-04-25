@@ -177,7 +177,7 @@ function getStylesheet(html, selectors) {
 
 function getImageFromStylesheet(css, divs) {
   for(var i in divs) {
-    var matches = css.match(new RegExp(divs[i] + "\\s*{[^}]*background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)&^}]+)"));
+    var matches = css.match(new RegExp(divs[i] + "[^\\s]*[,[^{]*]?{[^}]*background[^:]*:\\s*url\\s*\\(\\s*[\"|\']*([^\"&^\'&^)&^}]+)"));
     if(matches !== null) {
       return matches[1];
     }
