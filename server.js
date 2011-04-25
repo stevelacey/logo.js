@@ -2,8 +2,9 @@ var sys     = require("sys"),
     http    = require("http"),
     port    = 80,
     get     = require("request"),
-    fs      = require("fs"),
     url     = require("url"),
+    path    = require("path"),
+    fs      = require("fs"),
     $       = require("jquery"),
     uri;
 
@@ -18,54 +19,73 @@ http.createServer(function(request, response) {
   } else if(uri == 'favicon.ico') {
     response.writeHead(301, {'Location': 'http://www.stevelacey.net/favicon.ico'});
   } else if(uri == 'robots.txt') {
-    respond(response);
+    fail(response);
   } else {
-    uri = getUri();
-    console.log(uri);
+    var filename = path.join(process.cwd(), url.parse(request.url).pathname);
 
-    get({uri:uri}, function (error, r, html) {
-      if(!error && r.statusCode == 200) {
-        var imgs = ['header img:first', '#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
-        var inlines = ['header', '#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
-        var divs = ['[#|.]*header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', '[#|.]*header', 'h1', '#title']; // regex
-        var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
+    path.exists(filename, function(exists) {
+      if(!exists) {
+        uri = getUri();
+        console.log(uri);
 
-        var logo = preStylesheetScrape(html, imgs, inlines);
+        get({uri:uri}, function (error, r, html) {
+          if(!error && r.statusCode == 200) {
+            var imgs = ['header img:first', '#header img:first', '.header img:first', '#logo img', 'h1 img', '.logo img', 'img#logo', 'img.logo', '#banner img:first']; // css
+            var inlines = ['header', '#header', '.header', '#logo', '.logo', '#p-logo a', 'h1']; // css
+            var divs = ['[#|.]*header [#|.]logo', '[#|.][^\\s]*logo[^\\s&^{]*', '[#|.]*header', 'h1', '#title']; // regex
+            var stylesheets = ['main', 'style', 'screen', 'global']; // filenames
 
-        if(logo == undefined) {
-          // Try background-images
-          var stylesheet = getStylesheet(html, stylesheets);
+            var logo = preStylesheetScrape(html, imgs, inlines);
 
-          if(stylesheet != undefined) {
-            console.log(url.resolve(uri, stylesheet));
-            get({uri:url.resolve(uri, stylesheet)}, function (error, r, css) {
-              if(!error && r.statusCode == 200) {
-                logo = getImageFromStylesheet(css, divs);
+            if(logo == undefined) {
+              // Try background-images
+              var stylesheet = getStylesheet(html, stylesheets);
 
-                if(logo != undefined) {
-                  // The image path might be relational to the stylesheet location, redefine uri.
-                  uri = getStylesheetBaseDirectory(stylesheet);
-                  redirect(response, logo);
-                } else {
-                  logo = postStylesheetScrape(html);
-                  respond(response, logo);
-                }
+              if(stylesheet != undefined) {
+                console.log(url.resolve(uri, stylesheet));
+                get({uri:url.resolve(uri, stylesheet)}, function (error, r, css) {
+                  if(!error && r.statusCode == 200) {
+                    logo = getImageFromStylesheet(css, divs);
+
+                    if(logo != undefined) {
+                      // The image path might be relational to the stylesheet location, redefine uri.
+                      uri = getStylesheetBaseDirectory(stylesheet);
+                      redirect(response, logo);
+                    } else {
+                      logo = postStylesheetScrape(html);
+                      respond(response, logo);
+                    }
+                  } else {
+                    logo = postStylesheetScrape(html);
+                    respond(response, logo);
+                  }
+                })
               } else {
                 logo = postStylesheetScrape(html);
                 respond(response, logo);
               }
-            })
+            } else {
+              redirect(response, logo);
+            }
           } else {
-            logo = postStylesheetScrape(html);
-            respond(response, logo);
+            fail(response);
           }
-        } else {
-          redirect(response, logo);
-        }
+        })
+
       } else {
-        fail(response);
+        fs.readFile(filename, "binary", function(err, file) {
+          if(!err) {
+            response.writeHead(200);
+            response.write(file, "binary");
+          } else {
+            response.writeHead(500, {"Content-Type": "text/plain"});
+            response.write(err + "\n");
+          }
+
+          response.end();
+        });
       }
-    })
+    });
   }
 }).listen(port);
 
